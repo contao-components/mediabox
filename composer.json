@@ -1,0 +1,31 @@
+{
+    "name": "contao-components/mediabox",
+    "type": "component",
+    "description": "Mediabox integration for Contao Open Source CMS",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Leo Feyer",
+            "homepage": "https://github.com/leofeyer"
+        }
+    ],
+    "require": {
+        "robloach/component-installer": "~0.0"
+    },
+    "extra": {
+        "component": {
+            "scripts": [
+                "js/mediabox.min.js"
+            ],
+            "styles": [
+                "css/mediabox-black.min.css"
+            ],
+            "files": [
+                "js/Quickie.js",
+                "css/mediabox-white.min.css",
+                "images/*",
+                "player/*"
+            ]
+        }
+    }
+}
