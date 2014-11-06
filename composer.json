@@ -1,6 +1,6 @@
 {
     "name": "contao-components/mediabox",
-    "type": "component",
+    "type": "contao-component",
     "description": "Mediabox integration for Contao Open Source CMS",
     "license": "MIT",
     "authors": [
@@ -10,22 +10,6 @@
         }
     ],
     "require": {
-        "robloach/component-installer": "~0.0"
-    },
-    "extra": {
-        "component": {
-            "scripts": [
-                "js/mediabox.min.js"
-            ],
-            "styles": [
-                "css/mediabox-black.min.css"
-            ],
-            "files": [
-                "js/Quickie.js",
-                "css/mediabox-white.min.css",
-                "images/*",
-                "player/*"
-            ]
-        }
+        "contao-components/installer": "~1.0"
     }
 }
