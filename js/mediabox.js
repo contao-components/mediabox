@@ -1,5 +1,5 @@
 /*
-mediaboxAdvanced v1.5.4 - The ultimate extension of Slimbox and Mediabox; an all-media script
+mediaboxAdvanced v1.5.4.1 - The ultimate extension of Slimbox and Mediabox; an all-media script
 updated 2011.2.19
 	(c) 2007-2011 John Einselen - http://iaian7.com
 based on Slimbox v1.64 - The ultimate lightweight Lightbox clone
@@ -104,6 +104,7 @@ var Mediabox;
 				showCounter: true,				// If true, a counter will only be shown if there is more than 1 image to display
 				countBack: false,				// Inverts the displayed number (so instead of the first element being labeled 1/10, it's 10/10)
 				clickBlock: true,				// Adds an event on right-click to block saving of images from the context menu in most browsers (this can't prevent other ways of downloading, but works as a casual deterent)
+								// due to less than ideal code ordering, clickBlock on links must be removed manually around line 250
 //			iOS device options
 //				iOSenable: false,				// When set to false, disables overlay entirely (links open in new tab)
 												// IMAGES and INLINE content will display normally,
@@ -249,9 +250,10 @@ var Mediabox;
 
 			var links = this;
 
-			links.addEvent('contextmenu', function(e){
-				if (options.clickBlock && this.toString().match(/\.gif|\.jpg|\.jpeg|\.png/i)) e.stop();
-			});
+/*  clickBlock code - remove the following three lines to enable right-clicking on links to images  */
+			//links.addEvent('contextmenu', function(e){
+			//	if (this.toString().match(/\.gif|\.jpg|\.jpeg|\.png/i)) e.stop();
+			//});
 
 			links.removeEvents("click").addEvent("click", function() {
 				// Build the list of media that will be displayed
@@ -263,7 +265,7 @@ var Mediabox;
 					if(filteredHrefs.indexOf(item.toString()) < 0) {
 						filteredLinks.include(filteredArray[index]);
 						filteredHrefs.include(filteredArray[index].toString());
-					};
+					}
 				});
 
 				return Mediabox.open(filteredLinks.map(linkMapper), filteredHrefs.indexOf(this.toString()), _options);
@@ -332,7 +334,7 @@ var Mediabox;
 					next();
 			}
 		}
-		if (options.keyboardStop) { return false; };
+		if (options.keyboardStop) { return false; }
 	}
 
 	function previous() {
@@ -445,8 +447,8 @@ var Mediabox;
 			} else if (URL.match(/\.mov|\.m4v|\.m4a|\.aiff|\.avi|\.caf|\.dv|\.mid|\.m3u|\.mp3|\.mp2|\.mp4|\.qtz/i) || mediaType == 'qt') {
 				mediaType = 'qt';
 				mediaWidth = mediaWidth || options.defaultWidth;
-//				mediaHeight = (parseInt(mediaHeight)+16)+"px" || options.defaultHeight;
-				mediaHeight = (parseInt(mediaHeight)+16) || options.defaultHeight;
+//				mediaHeight = (parseInt(mediaHeight, 10)+16)+"px" || options.defaultHeight;
+				mediaHeight = (parseInt(mediaHeight, 10)+16) || options.defaultHeight;
 				preload = new Quickie(URL, {
 					id: 'MediaboxQT',
 					width: mediaWidth,
@@ -828,11 +830,11 @@ var Mediabox;
 			} else {	// Thanks to Dusan Medlin for fixing large 16x9 image errors in a 4x3 browser
 				if (mediaHeight >= winHeight-options.imgPadding && (mediaHeight / winHeight) >= (mediaWidth / winWidth)) {
 					mediaHeight = winHeight-options.imgPadding;
-					mediaWidth = preload.width = parseInt((mediaHeight/preload.height)*mediaWidth);
+					mediaWidth = preload.width = parseInt((mediaHeight/preload.height)*mediaWidth, 10);
 					preload.height = mediaHeight;
 				} else if (mediaWidth >= winWidth-options.imgPadding && (mediaHeight / winHeight) < (mediaWidth / winWidth)) {
 					mediaWidth = winWidth-options.imgPadding;
-					mediaHeight = preload.height = parseInt((mediaWidth/preload.width)*mediaHeight);
+					mediaHeight = preload.height = parseInt((mediaWidth/preload.width)*mediaHeight, 10);
 					preload.width = mediaWidth;
 				}
 				if (Browser.ie) preload = document.id(preload);
@@ -854,12 +856,13 @@ var Mediabox;
 //			preload;
 		} else if (mediaType == "ios" || Browser.Platform.ios) {
 			media.setStyles({backgroundImage: "none", display: ""});
-			media.set('html', options.linkText.replace(/{x}/gi, URL));
+			media.set('html', options.linkText.replace(/\{x\}/gi, URL));
 			mediaWidth = options.DefaultWidth;
 			mediaHeight = options.DefaultHeight;
 		} else if (mediaType == "url") {
 			media.setStyles({backgroundImage: "none", display: ""});
 			preload.inject(media);
+//			if (Browser.safari) options.resizeOpening = false;	// Prevents occasional blank video display errors in Safari, thanks to Kris Gale for the solution
 		} else if (mediaType == "obj") {
 			if (Browser.Plugins.Flash.version < "8") {
 				media.setStyles({backgroundImage: "none", display: ""});
@@ -869,6 +872,7 @@ var Mediabox;
 			} else {
 				media.setStyles({backgroundImage: "none", display: ""});
 				preload.inject(media);
+//				if (Browser.safari) options.resizeOpening = false;	// Prevents occasional blank video display errors in Safari, thanks to Kris Gale for the solution
 			}
 		} else {
 			media.setStyles({backgroundImage: "none", display: ""});
@@ -879,7 +883,7 @@ var Mediabox;
 
 		title.set('html', (options.showCaption) ? captionSplit[0] : "");
 		caption.set('html', (options.showCaption && (captionSplit.length > 1)) ? captionSplit[1] : "");
-		number.set('html', (options.showCounter && (mediaArray.length > 1)) ? options.counterText.replace(/{x}/, (options.countBack)?mediaArray.length-activeMedia:activeMedia+1).replace(/{y}/, mediaArray.length) : "");
+		number.set('html', (options.showCounter && (mediaArray.length > 1)) ? options.counterText.replace(/\{x\}/, (options.countBack)?mediaArray.length-activeMedia:activeMedia+1).replace(/\{y\}/, mediaArray.length) : "");
 
 //		if (options.countBack) {
 //			number.set('html', (options.showCounter && (mediaArray.length > 1)) ? options.counterText.replace(/{x}/, activeMedia + 1).replace(/{y}/, mediaArray.length) : "");
@@ -897,8 +901,8 @@ var Mediabox;
 
 		mediaWidth = media.offsetWidth;
 		mediaHeight = media.offsetHeight+bottom.offsetHeight;
-		if (mediaHeight >= top+top) { mTop = -top } else { mTop = -(mediaHeight/2) };
-		if (mediaWidth >= left+left) { mLeft = -left } else { mLeft = -(mediaWidth/2) };
+		if (mediaHeight >= top+top) { mTop = -top; } else { mTop = -(mediaHeight/2); }
+		if (mediaWidth >= left+left) { mLeft = -left; } else { mLeft = -(mediaWidth/2); }
 /****/	if (options.resizeOpening) { fx.resize.start({width: mediaWidth, height: mediaHeight, marginTop: mTop-margin, marginLeft: mLeft-margin});
 /****/	} else { center.setStyles({width: mediaWidth, height: mediaHeight, marginTop: mTop-margin, marginLeft: mLeft-margin}); mediaAnimate(); }
 //		center.setStyles({width: mediaWidth, height: mediaHeight, marginTop: mTop-margin, marginLeft: mLeft-margin});
@@ -952,7 +956,8 @@ Browser.Plugins.QuickTime = (function(){
 			}
 		}
 	} else {
-		try { var test = new ActiveXObject('QuickTime.QuickTime'); }
+		var test;
+		try { test = new ActiveXObject('QuickTime.QuickTime'); }
 		catch(e) {}
 
 		if (test) { return true; }
