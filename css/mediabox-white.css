@@ -1,6 +1,6 @@
-		/*	mediaboxAdvanced White theme	*/
-		/*	version 2.1 - August 2010		*/
-		/*	for mediaboxAdvanced v.1.3.1	*/
+		/*	mediaboxAdvanced Light theme	*/
+		/*	version 2.5 - May 2011			*/
+		/*	for mediaboxAdvanced v.1.5.x	*/
 
 		/*	Overlay background styling	*/
 
@@ -11,7 +11,7 @@
 	left: 0;
 	width: 100%;
 	height: 100%;
-	background-color: #fff;
+	background-color: #ccc;
 	cursor: pointer;
 }
 
@@ -37,18 +37,18 @@
 	-khtml-border-radius: 10px;
 	-moz-border-radius: 10px;
 	border-radius: 10px;
-	-webkit-box-shadow: 0px 5px 20px rgba(0,0,0,0.40);
-	-khtml-box-shadow: 0px 5px 20px rgba(0,0,0,0.40);
-	-moz-box-shadow: 0px 5px 20px rgba(0,0,0,0.40);
-	box-shadow: 0px 5px 20px rgba(0,0,0,0.40);
+	-webkit-box-shadow: 0px 5px 20px rgba(0,0,0,0.50);
+	-khtml-box-shadow: 0px 5px 20px rgba(0,0,0,0.50);
+	-moz-box-shadow: 0px 5px 20px rgba(0,0,0,0.50);
+	box-shadow: 0px 5px 20px rgba(0,0,0,0.50);
 	/* For IE 8 */
-	-ms-filter: "progid:DXImageTransform.Microsoft.Shadow(Strength=4, Direction=180, Color='#000000')";
+	-ms-filter: "progid:DXImageTransform.Microsoft.Shadow(Strength=5, Direction=180, Color='#000000')";
 	/* For IE 5.5 - 7 */
-	filter: progid:DXImageTransform.Microsoft.Shadow(Strength=4, Direction=180, Color='#000000');
+	filter: progid:DXImageTransform.Microsoft.Shadow(Strength=5, Direction=180, Color='#000000');
 }
 
 #mbCenter.mbLoading {
-	background: #fff url("../images/loading3.gif") no-repeat center;
+	background: #fff url("../images/loading-light.gif") no-repeat center;
 		/*	This style is applied only during animation.	*/
 		/*	For example, the next lines turn off shadows	*/
 		/*	improving browser performance on slow systems.	*/
@@ -59,7 +59,7 @@
 	box-shadow: none;
 }
 
-#mbImage {
+#mbMedia {
 	position: relative;
 	left: 0;
 	top: 0;
@@ -69,11 +69,23 @@
 	font-family: Myriad, Verdana, Arial, Helvetica, sans-serif;
 	line-height: 20px;
 	font-size: 12px;
-	color: #666;
+	color: #000;
 	text-align: left;
 	background-position: center center;
 	background-repeat: no-repeat;
 	padding: 10px;
+}
+
+@mbMedia img {
+	-webkit-border-radius: 4px;
+	-khtml-border-radius: 4px;
+	-moz-border-radius: 4px;
+	border-radius: 4px;
+}
+
+#mbAudio {
+	padding: 0 0 2px;
+	background-color: #000;
 }
 
 		/*	Title, Caption and Button styling	*/
@@ -83,14 +95,14 @@
 	font-family: Myriad, Verdana, Arial, Helvetica, sans-serif;
 	line-height: 20px;
 	font-size: 12px;
-	color: #999;
+	color: #777;
 	text-align: left;
 	padding: 0 10px 10px;
 }
 
 #mbTitle, #mbPrevLink, #mbNextLink, #mbCloseLink {
 	display: inline;
-	color: #666;
+	color: #000;
 	font-weight: bold;
 	line-height: 20px;
 	font-size: 12px;
@@ -98,7 +110,7 @@
 
 #mbNumber {
 	display: inline;
-	color: #999;
+	color: #777;
 	line-height: 14px;
 	font-size: 10px;
 	margin: auto 10px;
@@ -106,7 +118,7 @@
 
 #mbCaption {
 	display: block;
-	color: #666;
+	color: #777;
 	line-height: 14px;
 	font-size: 10px;
 }
@@ -119,13 +131,13 @@
 }
 
 #mbPrevLink b, #mbNextLink b, #mbCloseLink b {
-	color: #666;
+	color: #333;
 	font-weight: bold;
 	text-decoration: underline;
 }
 
 #mbPrevLink big, #mbNextLink big, #mbCloseLink big {
-	color: #666;
+	color: #333;
 	font-size: 16px;
 	line-height: 14px;
 	font-weight: bold;
@@ -133,12 +145,12 @@
 
 #mbBottom a, #mbBottom a:link, #mbBottom a:visited {	/* Thanks to Danny Jung for feedback and corrections */
 	text-decoration: none;
-	color: #666;
+	color: #333;
 }
 
 #mbBottom a:hover, #mbBottom a:active {
 	text-decoration: underline;
-	color: #999;
+	color: #000;
 }
 
 
@@ -149,7 +161,7 @@
 	font-family: Myriad, Verdana, Arial, Helvetica, sans-serif;
 	line-height: 20px;
 	font-size: 12px;
-	color: #000;
+	color: #fff;
 	text-align: center;
 	border: 10px solid #700;
 	padding: 10px 10px 10px;
@@ -161,7 +173,7 @@
 }
 
 #mbError a, #mbError a:link, #mbError a:visited, #mbError a:hover, #mbError a:active {
-	color: #700;
+	color: #d00;
 	font-weight: bold;
 	text-decoration: underline;
 }
