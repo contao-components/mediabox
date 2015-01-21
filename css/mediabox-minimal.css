@@ -1,5 +1,5 @@
 		/*	mediaboxAdvanced Minimal theme	*/
-		/*	version 2.5 - May 2011			*/
+		/*	version 2.5 - June 2011			*/
 		/*	for mediaboxAdvanced v.1.5.x	*/
 
 		/*	Overlay background styling	*/
@@ -15,14 +15,24 @@
 	cursor: pointer;
 }
 
-		/*	Legacy fix for older browsers	*/
+		/*	Fixes for older or limited browsers	*/
 
-#mbOverlay.mbOverlayFF {
+#mbOverlay.mbOverlayOpaque {
 	background: transparent url("../images/80.png") repeat;
 }
 
-#mbOverlay.mbOverlayIE {
+#mbOverlay.mbOverlayAbsolute {
 	position: absolute;
+}
+
+#mbOverlay.mbMobile {
+	position: absolute;
+	background-color: transparent;
+}
+
+#mbBottom.mbMobile {
+	line-height: 24px;
+	font-size: 18px;
 }
 
 		/*	Overlay panel styling	*/
@@ -31,7 +41,6 @@
 	position: absolute;
 	z-index: 9999;
 	left: 50%;
-/*	overflow: hidden;*/
 	background-color: rgba(0,0,0,0.4);
 }
 
@@ -47,10 +56,8 @@
 	-khtml-box-shadow: 0px 5px 20px rgba(0,0,0,0.60);
 	-moz-box-shadow: 0px 5px 20px rgba(0,0,0,0.60);
 	box-shadow: 0px 5px 20px rgba(0,0,0,0.60);
-	/* For IE 8 */
-	-ms-filter: "progid:DXImageTransform.Microsoft.Shadow(Strength=5, Direction=180, Color='#000000')";
-	/* For IE 5.5 - 7 */
-	filter: progid:DXImageTransform.Microsoft.Shadow(Strength=5, Direction=180, Color='#000000');
+	filter: progid:DXImageTransform.Microsoft.Shadow(Strength=5, Direction=180, Color='#000000'); /* For IE 5.5 - 7 */
+	-ms-filter: "progid:DXImageTransform.Microsoft.Shadow(Strength=5, Direction=180, Color='#000000')"; /* For IE 8 */
 
 		/*	Inline content styling	*/
 
@@ -66,12 +73,12 @@
 		/*	Title, Caption and Button styling	*/
 
 #mbBottom {
-	min-height: 20px;
-	font-family: Myriad, Verdana, Arial, Helvetica, sans-serif;
 	line-height: 20px;
 	font-size: 12px;
-	color: #999;
+	font-family: Myriad, Verdana, Arial, Helvetica, sans-serif;
 	text-align: left;
+	color: #999;
+/*	min-height: 20px;	*/
 	padding: 10px 6px 4px;
 }
 
@@ -79,23 +86,21 @@
 	display: inline;
 	color: #fff;
 	font-weight: bold;
-	line-height: 20px;
-	font-size: 12px;
 }
 
 #mbNumber {
 	display: inline;
 	color: #999;
-	line-height: 14px;
-	font-size: 10px;
+/*	line-height: 0.8em; */
+	font-size: 0.8em;
 	margin: auto 10px;
 }
 
 #mbCaption {
 	display: block;
 	color: #999;
-	line-height: 14px;
-	font-size: 10px;
+	line-height: 1.6em;
+	font-size: 0.8em;
 }
 
 #mbPrevLink, #mbNextLink, #mbCloseLink {
@@ -113,8 +118,8 @@
 
 #mbPrevLink big, #mbNextLink big, #mbCloseLink big {
 	color: #eee;
-	font-size: 16px;
-	line-height: 14px;
+	font-size: 1.4em;
+/*	line-height: 0.9em;*/
 	font-weight: bold;
 }
 
@@ -127,7 +132,6 @@
 	text-decoration: underline;
 	color: #fff;
 }
-
 
 		/*	Error message styling	*/
 

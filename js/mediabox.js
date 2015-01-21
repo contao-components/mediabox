@@ -1,5 +1,5 @@
 /*
-mediaboxAdvanced v1.5.1 - The ultimate extension of Slimbox and Mediabox; an all-media script
+mediaboxAdvanced v1.5.2 - The ultimate extension of Slimbox and Mediabox; an all-media script
 updated 2011.2.19
 	(c) 2007-2011 John Einselen - http://iaian7.com
 based on Slimbox v1.64 - The ultimate lightweight Lightbox clone
@@ -29,7 +29,7 @@ var Mediabox;
 	// DOM elements
 	overlay, center, media, bottom, captionSplit, title, caption, number, prevLink, nextLink,
 	// Mediabox specific vars
-	URL, WH, WHL, elrel, mediaWidth, mediaHeight, mediaType = "none", mediaSplit, mediaId = "mediaBox", margin;
+	URL, WH, WHL, elrel, mediaWidth, mediaHeight, mediaType = "none", mediaSplit, mediaId = "mediaBox", margin, marginBottom;
 
 	/*	Initialization	*/
 
@@ -42,7 +42,7 @@ var Mediabox;
 			]).setStyle("display", "none")
 		);
 
-		container = new Element("div", {id: "mbTop"}).inject(center, "inside");
+		container = new Element("div", {id: "mbContainer"}).inject(center, "inside");
 			media = new Element("div", {id: "mbMedia"}).inject(container, "inside");
 		bottom = new Element("div", {id: "mbBottom"}).inject(center, "inside").adopt(
 			closeLink = new Element("a", {id: "mbCloseLink", href: "#"}).addEvent("click", close),
@@ -68,21 +68,22 @@ var Mediabox;
 		},
 
 		recenter: function(){	// Thanks to Garo Hussenjian (Xapnet Productions http://www.xapnet.com) for suggesting this addition
-			if (center) {
-//				top = window.getScrollTop() + (window.getHeight()/2);
+			if (center && !Browser.Platform.ios) {
 				left = window.getScrollLeft() + (window.getWidth()/2);
+				center.setStyles({left: left, marginLeft: -(mediaWidth/2)-margin});
+//				top = window.getScrollTop() + (window.getHeight()/2);
 //				margin = center.getStyle('padding-left').toInt()+media.getStyle('margin-left').toInt()+media.getStyle('padding-left').toInt();
-				center.setStyles({top: top, left: left, marginTop: -(mediaHeight/2)-margin, marginLeft: -(mediaWidth/2)-margin, display: ""});
+//				center.setStyles({top: top, left: left, marginTop: -(mediaHeight/2)-margin, marginLeft: -(mediaWidth/2)-margin});
 			}
 		},
 
 		open: function(_mediaArray, startMedia, _options) {
 			options = {
 //			Text options (translate as needed)
-				buttonText: ['<big>&laquo;</big>','<big>&raquo;</big>','<big>&times;</big>'],		// Set "previous", "next", and "close" button content (HTML code should be written as entity codes or properly escaped)
+				buttonText: ['<big>&laquo;</big>','<big>&raquo;</big>','<big>&times;</big>'],		// Array defines "previous", "next", and "close" button content (HTML code should be written as entity codes or properly escaped)
 //				buttonText: ['<big>«</big>','<big>»</big>','<big>×</big>'],
 //				buttonText: ['<b>P</b>rev','<b>N</b>ext','<b>C</b>lose'],
-				counterText: '({x} of {y})',	// Translate or change as you wish, {x} = current item number, {y} = total gallery length
+				counterText: '({x} of {y})',	// Counter text, {x} = current item number, {y} = total gallery length
 				linkText: '<a href="{x}" target="_new">{x}</a><br/>open in a new tab</div>',	// Text shown on iOS devices for non-image links
 				flashText: '<b>Error</b><br/>Adobe Flash is either not installed or not up to date, please visit <a href="http://www.adobe.com/shockwave/download/download.cgi?P1_Prod_Version=ShockwaveFlash" title="Get Flash" target="_new">Adobe.com</a> to download the free player.',	// Text shown if Flash is not installed.
 //			General overlay options
@@ -101,6 +102,7 @@ var Mediabox;
 				defaultHeight: 360,				// Default height of the box (in pixels) for undefined media (MP4, FLV, etc.)
 				showCaption: true,				// Display the title and caption, true / false
 				showCounter: true,				// If true, a counter will only be shown if there is more than 1 image to display
+				countBack: false,				// Inverts the displayed number (so instead of the first element being labeled 1/10, it's 10/10)
 //			iOS device options
 //				iOSenable: false,				// When set to false, disables overlay entirely (links open in new tab)
 												// IMAGES and INLINE content will display normally,
@@ -178,12 +180,18 @@ var Mediabox;
 				overlay.className = 'mbOverlayOpaque';
 			}
 
-			if (Browser.Platform.ios || Browser.ie6) {
-				if (Browser.Platform.ios) options.keyboard = false;
-//				if (Browser.Platform.ios) options.overlayOpacity = 0.0;	// This helps ammeliorate the issues with CSS overlays in iOS, leaving a clickable background, but avoiding the visible issues
-				options.resizeOpening = false;
+			if (Browser.Platform.ios) {
+				options.keyboard = false;
+				options.resizeOpening = false;	// Speeds up interaction on small devices (mobile) or older computers (IE6)
+				overlay.className = 'mbMobile';
+				bottom.className = 'mbMobile';
+//				options.overlayOpacity = 0.001;	// Helps ameliorate the issues with CSS overlays in iOS, leaving a clickable background, but avoiding the visible issues
+				position();
+			}
+
+			if (Browser.ie6) {
+				options.resizeOpening = false;	// Speeds up interaction on small devices (mobile) or older computers (IE6)
 				overlay.className = 'mbOverlayAbsolute';
-				overlay.setStyle("position", "absolute");	// Temporary stopgap for lack of CSS "position: fixed;" element positioning in iOS browsers
 				position();
 			}
 
@@ -201,6 +209,8 @@ var Mediabox;
 			left = window.getScrollLeft() + (window.getWidth()/2);
 			// PATCH: handle NaN (see #6504)
 			margin = (center.getStyle('padding-left').toInt() || 0) + (media.getStyle('margin-left').toInt() || 0) + (media.getStyle('padding-left').toInt() || 0);
+			marginBottom = (bottom.getStyle('margin-left').toInt() || 0) + (bottom.getStyle('padding-left').toInt() || 0) + (bottom.getStyle('margin-right').toInt() || 0) + (bottom.getStyle('padding-right').toInt() || 0);
+			// PATCH EOF
 /****/		center.setStyles({top: top, left: left, width: options.initialWidth, height: options.initialHeight, marginTop: -(options.initialHeight/2)-margin, marginLeft: -(options.initialWidth/2)-margin, display: ""});
 			fx.resize = new Fx.Morph(center, {duration: options.resizeDuration, onComplete: mediaAnimate});
 			fx.overlay.start(options.overlayOpacity);
@@ -274,6 +284,7 @@ var Mediabox;
 		winWidth = window.getWidth();
 		winHeight = window.getHeight();
 		overlay.setStyles({width: winWidth, height: winHeight});
+//		overlay.setStyles({width: winWidth, height: (Browser.Platform.ios)?"1536px":winHeight});
 	}
 
 	function setup(open) {
@@ -862,17 +873,26 @@ var Mediabox;
 			mediaWidth = options.defaultWidth;
 			mediaHeight = options.defaultHeight;
 		}
-		media.setStyles({width: mediaWidth, height: mediaHeight});
-		caption.setStyles({width: mediaWidth});
 
 		title.set('html', (options.showCaption) ? captionSplit[0] : "");
 		caption.set('html', (options.showCaption && (captionSplit.length > 1)) ? captionSplit[1] : "");
-		number.set('html', (options.showCounter && (mediaArray.length > 1)) ? options.counterText.replace(/{x}/, activeMedia + 1).replace(/{y}/, mediaArray.length) : "");
-//		The following line inverts the displayed number (so instead of the first element being labeled 1/10, it's 10/10)
-//		number.set('html', (options.showCounter && (mediaArray.length > 1)) ? options.counterText.replace(/{x}/, mediaArray.length - activeMedia).replace(/{y}/, mediaArray.length) : "");
+		number.set('html', (options.showCounter && (mediaArray.length > 1)) ? options.counterText.replace(/{x}/, (options.countBack)?mediaArray.length-activeMedia:activeMedia+1).replace(/{y}/, mediaArray.length) : "");
+
+//		if (options.countBack) {
+//			number.set('html', (options.showCounter && (mediaArray.length > 1)) ? options.counterText.replace(/{x}/, activeMedia + 1).replace(/{y}/, mediaArray.length) : "");
+//		} else {
+//			number.set('html', (options.showCounter && (mediaArray.length > 1)) ? options.counterText.replace(/{x}/, mediaArray.length - activeMedia).replace(/{y}/, mediaArray.length) : "");
+//		}
 
 		if ((prevMedia >= 0) && (mediaArray[prevMedia][0].match(/\.gif|\.jpg|\.jpeg|\.png|twitpic\.com/i))) preloadPrev.src = mediaArray[prevMedia][0].replace(/twitpic\.com/i, "twitpic.com/show/full");
 		if ((nextMedia >= 0) && (mediaArray[nextMedia][0].match(/\.gif|\.jpg|\.jpeg|\.png|twitpic\.com/i))) preloadNext.src = mediaArray[nextMedia][0].replace(/twitpic\.com/i, "twitpic.com/show/full");
+		if (prevMedia >= 0) prevLink.style.display = "";
+		if (nextMedia >= 0) nextLink.style.display = "";
+		media.setStyles({width: mediaWidth, height: mediaHeight});
+		caption.setStyles({width: mediaWidth-marginBottom});
+		bottom.setStyles({width: mediaWidth-marginBottom});
+//		caption.setStyles({width: (options.calculateBottom)?mediaWidth-marginBottom:mediaWidth});
+//		bottom.setStyles({width: (options.calculateBottom)?mediaWidth-marginBottom:mediaWidth});
 
 		mediaWidth = media.offsetWidth;
 		mediaHeight = media.offsetHeight+bottom.offsetHeight;
@@ -890,8 +910,8 @@ var Mediabox;
 
 	function captionAnimate() {
 		center.className = "";
-		if (prevMedia >= 0) prevLink.style.display = "";
-		if (nextMedia >= 0) nextLink.style.display = "";
+//		if (prevMedia >= 0) prevLink.style.display = "";
+//		if (nextMedia >= 0) nextLink.style.display = "";
 		fx.bottom.start(1);
 	}
 
