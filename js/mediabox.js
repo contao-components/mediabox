@@ -1,5 +1,5 @@
 /*
-mediaboxAdvanced v1.5.2 - The ultimate extension of Slimbox and Mediabox; an all-media script
+mediaboxAdvanced v1.5.4 - The ultimate extension of Slimbox and Mediabox; an all-media script
 updated 2011.2.19
 	(c) 2007-2011 John Einselen - http://iaian7.com
 based on Slimbox v1.64 - The ultimate lightweight Lightbox clone
@@ -103,6 +103,7 @@ var Mediabox;
 				showCaption: true,				// Display the title and caption, true / false
 				showCounter: true,				// If true, a counter will only be shown if there is more than 1 image to display
 				countBack: false,				// Inverts the displayed number (so instead of the first element being labeled 1/10, it's 10/10)
+				clickBlock: true,				// Adds an event on right-click to block saving of images from the context menu in most browsers (this can't prevent other ways of downloading, but works as a casual deterent)
 //			iOS device options
 //				iOSenable: false,				// When set to false, disables overlay entirely (links open in new tab)
 												// IMAGES and INLINE content will display normally,
@@ -248,11 +249,9 @@ var Mediabox;
 
 			var links = this;
 
-			// PATCH: enable the contextmenu
-			//links.addEvent('contextmenu', function(e){
-			//	if (this.toString().match(/\.gif|\.jpg|\.jpeg|\.png/i)) e.stop();
-			//});
-			// PATCH EOF
+			links.addEvent('contextmenu', function(e){
+				if (options.clickBlock && this.toString().match(/\.gif|\.jpg|\.jpeg|\.png/i)) e.stop();
+			});
 
 			links.removeEvents("click").addEvent("click", function() {
 				// Build the list of media that will be displayed
@@ -284,7 +283,6 @@ var Mediabox;
 		winWidth = window.getWidth();
 		winHeight = window.getHeight();
 		overlay.setStyles({width: winWidth, height: winHeight});
-//		overlay.setStyles({width: winWidth, height: (Browser.Platform.ios)?"1536px":winHeight});
 	}
 
 	function setup(open) {
@@ -367,8 +365,10 @@ var Mediabox;
 			WH = mediaArray[mediaIndex][2].split(' ');
 			WHL = WH.length;
 			if (WHL>1) {
-				mediaWidth = (WH[WHL-2].match("%")) ? (window.getWidth()*((WH[WHL-2].replace("%", ""))*0.01))+"px" : WH[WHL-2]+"px";
-				mediaHeight = (WH[WHL-1].match("%")) ? (window.getHeight()*((WH[WHL-1].replace("%", ""))*0.01))+"px" : WH[WHL-1]+"px";
+//				mediaWidth = (WH[WHL-2].match("%")) ? (window.getWidth()*((WH[WHL-2].replace("%", ""))*0.01))+"px" : WH[WHL-2]+"px";
+				mediaWidth = (WH[WHL-2].match("%")) ? (window.getWidth()*((WH[WHL-2].replace("%", ""))*0.01)) : WH[WHL-2];
+//				mediaHeight = (WH[WHL-1].match("%")) ? (window.getHeight()*((WH[WHL-1].replace("%", ""))*0.01))+"px" : WH[WHL-1]+"px";
+				mediaHeight = (WH[WHL-1].match("%")) ? (window.getHeight()*((WH[WHL-1].replace("%", ""))*0.01)) : WH[WHL-1];
 			} else {
 				mediaWidth = "";
 				mediaHeight = "";
@@ -416,7 +416,7 @@ var Mediabox;
 			} else if (URL.match(/\.mp3|\.aac|tweetmic\.com|tmic\.fm/i) || mediaType == 'audio') {
 				mediaType = 'obj';
 				mediaWidth = mediaWidth || options.defaultWidth;
-				mediaHeight = mediaHeight || "17px";
+				mediaHeight = mediaHeight || "17";
 				if (URL.match(/tweetmic\.com|tmic\.fm/i)) {
 					URL = URL.split('/');
 					URL[4] = URL[4] || URL[3];
@@ -445,7 +445,8 @@ var Mediabox;
 			} else if (URL.match(/\.mov|\.m4v|\.m4a|\.aiff|\.avi|\.caf|\.dv|\.mid|\.m3u|\.mp3|\.mp2|\.mp4|\.qtz/i) || mediaType == 'qt') {
 				mediaType = 'qt';
 				mediaWidth = mediaWidth || options.defaultWidth;
-				mediaHeight = (parseInt(mediaHeight)+16)+"px" || options.defaultHeight;
+//				mediaHeight = (parseInt(mediaHeight)+16)+"px" || options.defaultHeight;
+				mediaHeight = (parseInt(mediaHeight)+16) || options.defaultHeight;
 				preload = new Quickie(URL, {
 					id: 'MediaboxQT',
 					width: mediaWidth,
@@ -459,8 +460,8 @@ var Mediabox;
 // Blip.tv
 			} else if (URL.match(/blip\.tv/i)) {
 				mediaType = 'obj';
-				mediaWidth = mediaWidth || "640px";
-				mediaHeight = mediaHeight || "390px";
+				mediaWidth = mediaWidth || "640";
+				mediaHeight = mediaHeight || "390";
 				preload = new Swiff(URL, {
 					src: URL,
 					width: mediaWidth,
@@ -471,8 +472,8 @@ var Mediabox;
 // Break.com
 			} else if (URL.match(/break\.com/i)) {
 				mediaType = 'obj';
-				mediaWidth = mediaWidth || "464px";
-				mediaHeight = mediaHeight || "376px";
+				mediaWidth = mediaWidth || "464";
+				mediaHeight = mediaHeight || "376";
 				mediaId = URL.match(/\d{6}/g);
 				preload = new Swiff('http://embed.break.com/'+mediaId, {
 					width: mediaWidth,
@@ -483,8 +484,8 @@ var Mediabox;
 // DailyMotion
 			} else if (URL.match(/dailymotion\.com/i)) {
 				mediaType = 'obj';
-				mediaWidth = mediaWidth || "480px";
-				mediaHeight = mediaHeight || "381px";
+				mediaWidth = mediaWidth || "480";
+				mediaHeight = mediaHeight || "381";
 				preload = new Swiff(URL, {
 					id: mediaId,
 					width: mediaWidth,
@@ -495,8 +496,8 @@ var Mediabox;
 // Facebook
 			} else if (URL.match(/facebook\.com/i)) {
 				mediaType = 'obj';
-				mediaWidth = mediaWidth || "320px";
-				mediaHeight = mediaHeight || "240px";
+				mediaWidth = mediaWidth || "320";
+				mediaHeight = mediaHeight || "240";
 				mediaSplit = URL.split('v=');
 				mediaSplit = mediaSplit[1].split('&');
 				mediaId = mediaSplit[0];
@@ -511,8 +512,8 @@ var Mediabox;
 // Flickr
 			} else if (URL.match(/flickr\.com(?!.+\/show\/)/i)) {
 				mediaType = 'obj';
-				mediaWidth = mediaWidth || "500px";
-				mediaHeight = mediaHeight || "375px";
+				mediaWidth = mediaWidth || "500";
+				mediaHeight = mediaHeight || "375";
 				mediaSplit = URL.split('/');
 				mediaId = mediaSplit[5];
 				preload = new Swiff('http://www.flickr.com/apps/video/stewart.swf', {
@@ -526,8 +527,8 @@ var Mediabox;
 // GameTrailers Video
 			} else if (URL.match(/gametrailers\.com/i)) {
 				mediaType = 'obj';
-				mediaWidth = mediaWidth || "480px";
-				mediaHeight = mediaHeight || "392px";
+				mediaWidth = mediaWidth || "480";
+				mediaHeight = mediaHeight || "392";
 				mediaId = URL.match(/\d{5}/g);
 				preload = new Swiff('http://www.gametrailers.com/remote_wrap.php?mid='+mediaId, {
 					id: mediaId,
@@ -539,8 +540,8 @@ var Mediabox;
 // Google Video
 			} else if (URL.match(/google\.com\/videoplay/i)) {
 				mediaType = 'obj';
-				mediaWidth = mediaWidth || "400px";
-				mediaHeight = mediaHeight || "326px";
+				mediaWidth = mediaWidth || "400";
+				mediaHeight = mediaHeight || "326";
 				mediaSplit = URL.split('=');
 				mediaId = mediaSplit[1];
 				preload = new Swiff('http://video.google.com/googleplayer.swf?docId='+mediaId+'&autoplay='+options.autoplayNum, {
@@ -553,8 +554,8 @@ var Mediabox;
 // Megavideo - Thanks to Robert Jandreu for suggesting this code!
 			} else if (URL.match(/megavideo\.com/i)) {
 				mediaType = 'obj';
-				mediaWidth = mediaWidth || "640px";
-				mediaHeight = mediaHeight || "360px";
+				mediaWidth = mediaWidth || "640";
+				mediaHeight = mediaHeight || "360";
 				mediaSplit = URL.split('=');
 				mediaId = mediaSplit[1];
 				preload = new Swiff('http://wwwstatic.megavideo.com/mv_player.swf?v='+mediaId, {
@@ -567,8 +568,8 @@ var Mediabox;
 // Metacafe
 			} else if (URL.match(/metacafe\.com\/watch/i)) {
 				mediaType = 'obj';
-				mediaWidth = mediaWidth || "400px";
-				mediaHeight = mediaHeight || "345px";
+				mediaWidth = mediaWidth || "400";
+				mediaHeight = mediaHeight || "345";
 				mediaSplit = URL.split('/');
 				mediaId = mediaSplit[4];
 				preload = new Swiff('http://www.metacafe.com/fplayer/'+mediaId+'/.swf?playerVars=autoPlay='+options.autoplayYes, {
@@ -581,8 +582,8 @@ var Mediabox;
 // Myspace
 			} else if (URL.match(/vids\.myspace\.com/i)) {
 				mediaType = 'obj';
-				mediaWidth = mediaWidth || "425px";
-				mediaHeight = mediaHeight || "360px";
+				mediaWidth = mediaWidth || "425";
+				mediaHeight = mediaHeight || "360";
 				preload = new Swiff(URL, {
 					id: mediaId,
 					width: mediaWidth,
@@ -593,8 +594,8 @@ var Mediabox;
 // Revver
 			} else if (URL.match(/revver\.com/i)) {
 				mediaType = 'obj';
-				mediaWidth = mediaWidth || "480px";
-				mediaHeight = mediaHeight || "392px";
+				mediaWidth = mediaWidth || "480";
+				mediaHeight = mediaHeight || "392";
 				mediaSplit = URL.split('/');
 				mediaId = mediaSplit[4];
 				preload = new Swiff('http://flash.revver.com/player/1.0/player.swf?mediaId='+mediaId+'&affiliateId='+options.revverID+'&allowFullScreen='+options.revverFullscreen+'&autoStart='+options.autoplay+'&backColor=#'+options.revverBack+'&frontColor=#'+options.revverFront+'&gradColor=#'+options.revverGrad+'&shareUrl=revver', {
@@ -607,8 +608,8 @@ var Mediabox;
 // Rutube
 			} else if (URL.match(/rutube\.ru/i)) {
 				mediaType = 'obj';
-				mediaWidth = mediaWidth || "470px";
-				mediaHeight = mediaHeight || "353px";
+				mediaWidth = mediaWidth || "470";
+				mediaHeight = mediaHeight || "353";
 				mediaSplit = URL.split('=');
 				mediaId = mediaSplit[1];
 				preload = new Swiff('http://video.rutube.ru/'+mediaId, {
@@ -621,8 +622,8 @@ var Mediabox;
 // Tudou
 			} else if (URL.match(/tudou\.com/i)) {
 				mediaType = 'obj';
-				mediaWidth = mediaWidth || "400px";
-				mediaHeight = mediaHeight || "340px";
+				mediaWidth = mediaWidth || "400";
+				mediaHeight = mediaHeight || "340";
 				mediaSplit = URL.split('/');
 				mediaId = mediaSplit[5];
 				preload = new Swiff('http://www.tudou.com/v/'+mediaId, {
@@ -634,8 +635,8 @@ var Mediabox;
 // Twitcam
 			} else if (URL.match(/twitcam\.com/i)) {
 				mediaType = 'obj';
-				mediaWidth = mediaWidth || "320px";
-				mediaHeight = mediaHeight || "265px";
+				mediaWidth = mediaWidth || "320";
+				mediaHeight = mediaHeight || "265";
 				mediaSplit = URL.split('/');
 				mediaId = mediaSplit[3];
 				preload = new Swiff('http://static.livestream.com/chromelessPlayer/wrappers/TwitcamPlayer.swf?hash='+mediaId, {
@@ -647,8 +648,8 @@ var Mediabox;
 // Twitvid
 			} else if (URL.match(/twitvid\.com/i)) {
 				mediaType = 'obj';
-				mediaWidth = mediaWidth || "600px";
-				mediaHeight = mediaHeight || "338px";
+				mediaWidth = mediaWidth || "600";
+				mediaHeight = mediaHeight || "338";
 				mediaSplit = URL.split('/');
 				mediaId = mediaSplit[3];
 				preload = new Swiff('http://www.twitvid.com/player/'+mediaId, {
@@ -660,8 +661,8 @@ var Mediabox;
 // Ustream.tv
 			} else if (URL.match(/ustream\.tv/i)) {
 				mediaType = 'obj';
-				mediaWidth = mediaWidth || "400px";
-				mediaHeight = mediaHeight || "326px";
+				mediaWidth = mediaWidth || "400";
+				mediaHeight = mediaHeight || "326";
 				preload = new Swiff(URL+'&amp;viewcount='+options.usViewers+'&amp;autoplay='+options.autoplay, {
 					width: mediaWidth,
 					height: mediaHeight,
@@ -671,8 +672,8 @@ var Mediabox;
 // YouKu
 			} else if (URL.match(/youku\.com/i)) {
 				mediaType = 'obj';
-				mediaWidth = mediaWidth || "480px";
-				mediaHeight = mediaHeight || "400px";
+				mediaWidth = mediaWidth || "480";
+				mediaHeight = mediaHeight || "400";
 				mediaSplit = URL.split('id_');
 				mediaId = mediaSplit[1];
 				preload = new Swiff('http://player.youku.com/player.php/sid/'+mediaId+'=/v.swf', {
@@ -686,8 +687,8 @@ var Mediabox;
 				mediaSplit = URL.split('v=');
 				if (options.html5) {
 					mediaType = 'url';
-					mediaWidth = mediaWidth || "640px";
-					mediaHeight = mediaHeight || "385px";
+					mediaWidth = mediaWidth || "640";
+					mediaHeight = mediaHeight || "385";
 					mediaId = "mediaId_"+new Date().getTime();	// Safari may not update iframe content with a static id.
 					preload = new Element('iframe', {
 						'src': 'http://www.youtube.com/embed/'+mediaSplit[1],
@@ -701,8 +702,8 @@ var Mediabox;
 				} else {
 					mediaType = 'obj';
 					mediaId = mediaSplit[1];
-					mediaWidth = mediaWidth || "480px";
-					mediaHeight = mediaHeight || "385px";
+					mediaWidth = mediaWidth || "480";
+					mediaHeight = mediaHeight || "385";
 					preload = new Swiff('http://www.youtube.com/v/'+mediaId+'&autoplay='+options.autoplayNum+'&fs='+options.fullscreenNum+'&border='+options.ytBorder+'&color1=0x'+options.ytColor1+'&color2=0x'+options.ytColor2+'&rel='+options.ytRel+'&showinfo='+options.ytInfo+'&showsearch='+options.ytSearch, {
 						id: mediaId,
 						width: mediaWidth,
@@ -716,8 +717,8 @@ var Mediabox;
 				mediaType = 'obj';
 				mediaSplit = URL.split('p=');
 				mediaId = mediaSplit[1];
-				mediaWidth = mediaWidth || "480px";
-				mediaHeight = mediaHeight || "385px";
+				mediaWidth = mediaWidth || "480";
+				mediaHeight = mediaHeight || "385";
 				preload = new Swiff('http://www.youtube.com/p/'+mediaId+'&autoplay='+options.autoplayNum+'&fs='+options.fullscreenNum+'&border='+options.ytBorder+'&color1=0x'+options.ytColor1+'&color2=0x'+options.ytColor2+'&rel='+options.ytRel+'&showinfo='+options.ytInfo+'&showsearch='+options.ytSearch, {
 					id: mediaId,
 					width: mediaWidth,
@@ -728,8 +729,8 @@ var Mediabox;
 // Veoh
 			} else if (URL.match(/veoh\.com/i)) {
 				mediaType = 'obj';
-				mediaWidth = mediaWidth || "410px";
-				mediaHeight = mediaHeight || "341px";
+				mediaWidth = mediaWidth || "410";
+				mediaHeight = mediaHeight || "341";
 				URL = URL.replace('%3D','/');
 				mediaSplit = URL.split('watch/');
 				mediaId = mediaSplit[1];
@@ -743,8 +744,8 @@ var Mediabox;
 // Viddler
 			} else if (URL.match(/viddler\.com/i)) {
 				mediaType = 'obj';
-				mediaWidth = mediaWidth || "437px";
-				mediaHeight = mediaHeight || "370px";
+				mediaWidth = mediaWidth || "437";
+				mediaHeight = mediaHeight || "370";
 				mediaSplit = URL.split('/');
 				mediaId = mediaSplit[4];
 				preload = new Swiff(URL, {
@@ -758,8 +759,8 @@ var Mediabox;
 				startEffect();
 // Vimeo (now includes HTML5 option)
 			} else if (URL.match(/vimeo\.com/i)) {
-				mediaWidth = mediaWidth || "640px";		// site defualt: 400px
-				mediaHeight = mediaHeight || "360px";	// site defualt: 225px
+				mediaWidth = mediaWidth || "640";		// site defualt: 400px
+				mediaHeight = mediaHeight || "360";		// site defualt: 225px
 				mediaSplit = URL.split('/');
 				mediaId = mediaSplit[3];
 
@@ -835,10 +836,12 @@ var Mediabox;
 					preload.width = mediaWidth;
 				}
 				if (Browser.ie) preload = document.id(preload);
-				preload.addEvent('mousedown', function(e){ e.stop(); }).addEvent('contextmenu', function(e){ e.stop(); });
+				if (options.clickBlock) preload.addEvent('mousedown', function(e){ e.stop(); }).addEvent('contextmenu', function(e){ e.stop(); });
 				media.setStyles({backgroundImage: "none", display: ""});
 				preload.inject(media);
 			}
+//			mediaWidth += "px";
+//			mediaHeight += "px";
 		} else if (mediaType == "inline") {
 //			if (options.overflow) media.setStyles({overflow: options.overflow});
 			media.setStyles({backgroundImage: "none", display: ""});
@@ -888,11 +891,9 @@ var Mediabox;
 		if ((nextMedia >= 0) && (mediaArray[nextMedia][0].match(/\.gif|\.jpg|\.jpeg|\.png|twitpic\.com/i))) preloadNext.src = mediaArray[nextMedia][0].replace(/twitpic\.com/i, "twitpic.com/show/full");
 		if (prevMedia >= 0) prevLink.style.display = "";
 		if (nextMedia >= 0) nextLink.style.display = "";
-		media.setStyles({width: mediaWidth, height: mediaHeight});
-		caption.setStyles({width: mediaWidth-marginBottom});
-		bottom.setStyles({width: mediaWidth-marginBottom});
-//		caption.setStyles({width: (options.calculateBottom)?mediaWidth-marginBottom:mediaWidth});
-//		bottom.setStyles({width: (options.calculateBottom)?mediaWidth-marginBottom:mediaWidth});
+		media.setStyles({width: mediaWidth+"px", height: mediaHeight+"px"});
+		bottom.setStyles({width: mediaWidth-marginBottom+"px"});
+		caption.setStyles({width: mediaWidth-marginBottom+"px"});
 
 		mediaWidth = media.offsetWidth;
 		mediaHeight = media.offsetHeight+bottom.offsetHeight;
